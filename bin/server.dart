@@ -24,6 +24,9 @@ void main(List<String> args) async {
 
   // Configure a pipeline that logs requests.
   final handler = Pipeline()
+      .addMiddleware((innerHandler) => (Request request) async {
+            return innerHandler(request);
+          })
       .addMiddleware(
         logRequests(),
       )
