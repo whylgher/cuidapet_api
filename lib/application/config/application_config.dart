@@ -1,15 +1,17 @@
-import 'package:cuidapet_api/application/config/database_connection_configuration.dart';
 import 'package:dotenv/dotenv.dart' show load, env;
 import 'package:get_it/get_it.dart';
 
 import '../logger/i_logger.dart';
 import '../logger/i_logger_impl.dart';
+import 'database_connection_configuration.dart';
+import 'service_locator_config.dart';
 
 class ApplicationConfig {
   Future<void> loadConfigApplication() async {
     await _loadEnv();
     _loadDataBaseConfig();
     _configLogger();
+    _loadDependencies();
   }
 
   Future<void> _loadEnv() async => load();
@@ -27,4 +29,6 @@ class ApplicationConfig {
 
   void _configLogger() =>
       GetIt.I.registerLazySingleton<ILogger>(() => ILoggerImpl());
+
+  void _loadDependencies() => configureDependencies();
 }
