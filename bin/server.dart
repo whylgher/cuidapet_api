@@ -3,18 +3,20 @@ import 'dart:io';
 import 'package:cuidapet_api/application/config/application_config.dart';
 import 'package:cuidapet_api/application/middleware/cors/cors_middlewares.dart';
 import 'package:cuidapet_api/application/middleware/defaultContentType/default_content_type.dart';
+import 'package:cuidapet_api/application/middleware/security/security_middleware.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 // Configure routes.
-final _router = Router()..get('/', _rootHandler);
+// final _router = Router()..get('/', _rootHandler);
 
-Response _rootHandler(Request req) {
-  return Response.ok('Hello, World!\n');
-}
+// Response _rootHandler(Request req) {
+//   return Response.ok('Hello, World!\n');
+// }
 
-// final _router = Router();
+final _router = Router();
 
 void main(List<String> args) async {
   // Use any available host or container IP (usually `0.0.0.0`).
@@ -22,7 +24,9 @@ void main(List<String> args) async {
 
   // Aplication Config
   final appConfig = ApplicationConfig();
-  appConfig.loadConfigApplication(_router);
+  await appConfig.loadConfigApplication(_router);
+
+  final getIt = GetIt.I;
 
   // Configure a pipeline that logs requests.
   final handler = Pipeline()
@@ -32,6 +36,7 @@ void main(List<String> args) async {
       .addMiddleware(
         DefaultContentType('application/json;charset=utf-8').handler,
       )
+      .addMiddleware(SecurityMiddleware(getIt.get()).handler)
       .addMiddleware(
         logRequests(),
       )

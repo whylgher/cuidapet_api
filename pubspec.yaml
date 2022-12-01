@@ -16,6 +16,7 @@ dependencies:
   get_it: ^7.2.0
   logger: ^1.1.0
   injectable: ^2.1.0
+  jaguar_jwt: ^3.0.0
   
   #
   # Chamando a versão direto do github
