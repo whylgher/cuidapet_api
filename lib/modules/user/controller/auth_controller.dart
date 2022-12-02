@@ -10,7 +10,7 @@ import '../../../application/helpers/jwt_helper.dart';
 import '../../../application/logger/i_logger.dart';
 import '../../../entities/user.dart';
 import '../../../exceptions/user_exists_exception.dart';
-import '../../../exceptions/user_not_fount_exception.dart';
+import '../../../exceptions/user_not_found_exception.dart';
 import '../service/i_user_service.dart';
 import '../view_models/login_view_model.dart';
 import '../view_models/user_save_input_model.dart';
@@ -36,10 +36,15 @@ class AuthController {
 
       if (!loginViewModel.socialLogin) {
         user = await userService.loginWithEmailPassword(loginViewModel.login,
-            loginViewModel.password, loginViewModel.supplierUser);
+            loginViewModel.password!, loginViewModel.supplierUser);
       } else {
         // Social Login (Facebook, google, apple, etc....)
-        user = User();
+        user = await userService.loginWithSocial(
+          loginViewModel.login,
+          loginViewModel.avatar!,
+          loginViewModel.socialType!,
+          loginViewModel.socialKey!,
+        );
       }
 
       return Response.ok(
@@ -47,7 +52,7 @@ class AuthController {
           'access_token': JwtHelper.generateJWT(user.id!, user.supplierId),
         }),
       );
-    } on UserNotFountException {
+    } on UserNotFoundException {
       return Response.forbidden(
         jsonEncode(
           {

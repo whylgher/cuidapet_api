@@ -42,8 +42,10 @@ _i1.GetIt init(
         connection: gh<_i3.IDatabaseConnection>(),
         log: gh<_i8.ILogger>(),
       ));
-  gh.lazySingleton<_i9.IUserService>(
-      () => _i10.IUserServiceImpl(userRepository: gh<_i6.IUserRepository>()));
+  gh.lazySingleton<_i9.IUserService>(() => _i10.IUserServiceImpl(
+        userRepository: gh<_i6.IUserRepository>(),
+        log: gh<_i8.ILogger>(),
+      ));
   gh.factory<_i11.AuthController>(() => _i11.AuthController(
         userService: gh<_i9.IUserService>(),
         log: gh<_i8.ILogger>(),

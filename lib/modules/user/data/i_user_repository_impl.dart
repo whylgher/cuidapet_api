@@ -8,7 +8,7 @@ import '../../../application/helpers/cripty_helper.dart';
 import '../../../application/logger/i_logger.dart';
 import '../../../exceptions/database_exception.dart';
 import '../../../exceptions/user_exists_exception.dart';
-import '../../../exceptions/user_not_fount_exception.dart';
+import '../../../exceptions/user_not_found_exception.dart';
 
 @LazySingleton(as: IUserRepository)
 class IUserRepositoryImpl implements IUserRepository {
@@ -65,6 +65,7 @@ class IUserRepositoryImpl implements IUserRepository {
 
     try {
       conn = await connection.openConnection();
+
       var query = '''
         SELECT *
         FROM usuario 
@@ -86,7 +87,7 @@ class IUserRepositoryImpl implements IUserRepository {
 
       if (result.isEmpty) {
         log.error('Usuário ou senha inválidos');
-        throw UserNotFountException(message: 'Usuário ou senha inválidos');
+        throw UserNotFoundException(message: 'Usuário ou senha inválidos');
       } else {
         final userSqlData = result.first;
         return User(
@@ -103,6 +104,49 @@ class IUserRepositoryImpl implements IUserRepository {
     } on MySqlException catch (e, s) {
       log.error('Erro ao realizar login', e, s);
       throw DatabaseException(message: e.message);
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<User> loginByEmailSocialKey(
+      String email, String socialKey, String socialType) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+
+      final result = await conn.query('''
+          SELECT * 
+          FROM usuario 
+          WHERE email = ?
+       ''', [email]);
+
+      if (result.isEmpty) {
+        throw UserNotFoundException(message: 'Usuário não encontrado');
+      } else {
+        final dataMysql = result.first;
+        if (dataMysql['social_id'] == null ||
+            dataMysql['social_id'] != socialKey) {
+          await conn.query(''' 
+            UPDATE usuario 
+            SET social_id = ?, tipo_cadastro = ?
+            WHERE id = ?
+          ''', [socialKey, socialType, dataMysql['id']]);
+        }
+
+        return User(
+          id: dataMysql['id'] as int,
+          email: dataMysql['email'],
+          registerType: dataMysql['tipo_cadastro'],
+          iosToken: (dataMysql['ios_token'] as Blob?)?.toString(),
+          androidToken: (dataMysql['android_token'] as Blob?)?.toString(),
+          refreshToken: (dataMysql['refresh_token'] as Blob?)?.toString(),
+          imageAvatar: (dataMysql['img_avatar'] as Blob?)?.toString(),
+          supplierId: dataMysql['fornecedor_id'],
+        );
+      }
     } finally {
       await conn?.close();
     }

@@ -1,8 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-class UserNotFountException implements Exception {
+class UserNotFoundException implements Exception {
   String message;
 
-  UserNotFountException({
+  UserNotFoundException({
     required this.message,
   });
 }
