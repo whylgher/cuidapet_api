@@ -13,6 +13,7 @@ import '../../../exceptions/user_exists_exception.dart';
 import '../../../exceptions/user_not_found_exception.dart';
 import '../service/i_user_service.dart';
 import '../view_models/login_view_model.dart';
+import '../view_models/user_confirm_input_model.dart';
 import '../view_models/user_save_input_model.dart';
 
 part 'auth_controller.g.dart';
@@ -92,6 +93,31 @@ class AuthController {
       log.error('Erro ao cadastrar usuário', e);
       return Response.internalServerError();
     }
+  }
+
+  @Route('PATCH', '/confirm')
+  Future<Response> confirmLogin(Request request) async {
+    final user = int.parse(request.headers['user']!);
+    final supplier = int.tryParse(request.headers['supplier'] ?? '');
+    final token =
+        JwtHelper.generateJWT(user, supplier).replaceAll('Bearer', '');
+
+    final inputModel = UserConfirmInputModel(
+      userId: user,
+      acccessToken: token,
+      data: await request.readAsString(),
+    );
+
+    final refreshToken = await userService.confirmLogin(inputModel);
+
+    return Response.ok(
+      jsonEncode(
+        {
+          'access_token': 'Bearer $token',
+          'refresh_token': refreshToken,
+        },
+      ),
+    );
   }
 
   Router get router => _$AuthControllerRouter(this);

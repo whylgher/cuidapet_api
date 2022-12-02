@@ -6,4 +6,5 @@ abstract class IUserRepository {
       String email, String password, bool supplier);
   Future<User> loginByEmailSocialKey(
       String email, String socialKey, String socialType);
+  Future<void> updateUserDeviceTokenAndRefreshToken(User user);
 }
