@@ -12,16 +12,17 @@ import 'security_skip_url.dart';
 class SecurityMiddleware extends Middlewares {
   final ILogger log;
   final skypUrl = <SecuritySkipUrl>[
-    SecuritySkipUrl(url: '/auth/register', method: 'POST')
+    SecuritySkipUrl(url: '/auth/register', method: 'POST'),
+    SecuritySkipUrl(url: '/auth/', method: 'POST'),
   ];
 
   SecurityMiddleware(this.log);
 
   @override
   Future<Response> execute(Request request) async {
-    print('skypUrl');
-    print(skypUrl);
-    print('skypUrl');
+    // print('skypUrl');
+    // print(skypUrl);
+    // print('skypUrl');
     try {
       if (skypUrl.contains(
         SecuritySkipUrl(url: '/${request.url.path}', method: request.method),

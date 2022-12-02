@@ -8,6 +8,7 @@ import '../../../application/helpers/cripty_helper.dart';
 import '../../../application/logger/i_logger.dart';
 import '../../../exceptions/database_exception.dart';
 import '../../../exceptions/user_exists_exception.dart';
+import '../../../exceptions/user_not_fount_exception.dart';
 
 @LazySingleton(as: IUserRepository)
 class IUserRepositoryImpl implements IUserRepository {
@@ -52,6 +53,56 @@ class IUserRepositoryImpl implements IUserRepository {
         message: 'Erro ao criar usuario',
         exception: e,
       );
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<User> loginWithEmailPassword(
+      String email, String password, bool supplierUser) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+      var query = '''
+        SELECT *
+        FROM usuario 
+        WHERE 
+          email = ?
+          and senha = ?
+        ''';
+
+      if (supplierUser) {
+        query += 'AND fornecedor_id IS NOT NULL';
+      } else {
+        query += 'AND fornecedor_id IS NULL';
+      }
+
+      final result = await conn.query(query, [
+        email,
+        CriptyHelper.genereteSha256Hash(password),
+      ]);
+
+      if (result.isEmpty) {
+        log.error('Usuário ou senha inválidos');
+        throw UserNotFountException(message: 'Usuário ou senha inválidos');
+      } else {
+        final userSqlData = result.first;
+        return User(
+          id: userSqlData['id'] as int,
+          email: userSqlData['email'],
+          registerType: userSqlData['tipo_cadastro'],
+          iosToken: (userSqlData['ios_token'] as Blob?)?.toString(),
+          androidToken: (userSqlData['android_token'] as Blob?)?.toString(),
+          refreshToken: (userSqlData['refresh_token'] as Blob?)?.toString(),
+          imageAvatar: (userSqlData['img_avatar'] as Blob?)?.toString(),
+          supplierId: userSqlData['fornecedor_id'],
+        );
+      }
+    } on MySqlException catch (e, s) {
+      log.error('Erro ao realizar login', e, s);
+      throw DatabaseException(message: e.message);
     } finally {
       await conn?.close();
     }

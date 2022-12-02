@@ -21,4 +21,9 @@ class IUserServiceImpl implements IUserService {
 
     return userRepository.createUser(userEntity);
   }
+
+  @override
+  Future<User> loginWithEmailPassword(
+          String email, String password, bool supplier) =>
+      userRepository.loginWithEmailPassword(email, password, supplier);
 }
