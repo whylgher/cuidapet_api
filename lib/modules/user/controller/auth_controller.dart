@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'dart:async';
 import 'dart:convert';
 
 import 'package:injectable/injectable.dart';
@@ -14,6 +12,7 @@ import '../../../exceptions/user_not_found_exception.dart';
 import '../service/i_user_service.dart';
 import '../view_models/login_view_model.dart';
 import '../view_models/user_confirm_input_model.dart';
+import '../view_models/user_refresh_token_input_model.dart';
 import '../view_models/user_save_input_model.dart';
 
 part 'auth_controller.g.dart';
@@ -113,11 +112,47 @@ class AuthController {
     return Response.ok(
       jsonEncode(
         {
-          'access_token': 'Bearer $token',
+          'access_token': 'Bearer$token',
           'refresh_token': refreshToken,
         },
       ),
     );
+  }
+
+  @Route.put('/refresh')
+  Future<Response> refreshToken(Request request) async {
+    try {
+      final user = int.parse(request.headers['user']!);
+
+      final supplier = int.tryParse(request.headers['supplier'] ?? '');
+
+      final accessToken = request.headers['access_token']!;
+
+      final model = UserRefreshTokenInputModel(
+        user: user,
+        supplier: supplier,
+        accessToken: accessToken,
+        dataRequest: await request.readAsString(),
+      );
+
+      final userRefreshToken = await userService.refreshToken(model);
+
+      return Response.ok(
+        jsonEncode(
+          {
+            'access_token': userRefreshToken.accessToken,
+            'refresh_token': userRefreshToken.refreshToken,
+          },
+        ),
+      );
+    } catch (e) {
+      log.error(e);
+      return Response.internalServerError(
+        body: jsonEncode(
+          {'message': 'Erro ao atualizar access token'},
+        ),
+      );
+    }
   }
 
   Router get router => _$AuthControllerRouter(this);

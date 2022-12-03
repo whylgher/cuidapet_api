@@ -176,9 +176,6 @@ class IUserRepositoryImpl implements IUserRepository {
         id = ?
       ''';
 
-      print('user');
-      print(user);
-
       await conn.query(query, [
         setParams.values.elementAt(0),
         user.refreshToken!,
@@ -187,6 +184,24 @@ class IUserRepositoryImpl implements IUserRepository {
     } on MySqlException catch (e, s) {
       log.error('Erro ao confirmar login', e, s);
       throw DatabaseException(message: e.message);
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<void> updateRefreshToken(User user) async {
+    MySqlConnection? conn;
+    try {
+      conn = await connection.openConnection();
+      await conn.query(''' 
+        UPDATE usuario
+        SET refresh_token = ?
+        WHERE id = ?
+      ''', [
+        user.refreshToken!,
+        user.id!,
+      ]);
     } finally {
       await conn?.close();
     }

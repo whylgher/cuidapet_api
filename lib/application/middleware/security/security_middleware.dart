@@ -20,9 +20,6 @@ class SecurityMiddleware extends Middlewares {
 
   @override
   Future<Response> execute(Request request) async {
-    // print('skypUrl');
-    // print(skypUrl);
-    // print('skypUrl');
     try {
       if (skypUrl.contains(
         SecuritySkipUrl(url: '/${request.url.path}', method: request.method),
@@ -39,9 +36,6 @@ class SecurityMiddleware extends Middlewares {
       final authHeaderContent = authHeader.split(' ');
 
       if (authHeaderContent[0] != 'Bearer') {
-        print(true);
-        print('authHeaderContent');
-        print(authHeaderContent);
         throw JwtException.invalidToken;
       }
 
@@ -72,7 +66,7 @@ class SecurityMiddleware extends Middlewares {
       log.error('Erro ao validar token JWT', e, s);
       return Response.forbidden(jsonEncode({}));
     } catch (e, s) {
-      log.error('Internal Server Error token JWT', e, s);
+      log.error('Internal Server Error', e, s);
       return Response.forbidden(jsonEncode({}));
     }
   }
