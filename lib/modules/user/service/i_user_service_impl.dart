@@ -103,7 +103,11 @@ class IUserServiceImpl implements IUserService {
 
       final refreshTokenClaim = JwtHelper.getClaims(refreshToken.last);
 
-      refreshTokenClaim.validate(issuer: ' ${model.accessToken}');
+      if (model.accessToken.contains(' ')) {
+        refreshTokenClaim.validate(issuer: ' ${model.accessToken}');
+      } else {
+        refreshTokenClaim.validate(issuer: model.accessToken);
+      }
     } on ServiceException {
       rethrow;
     } on JwtException catch (e, s) {

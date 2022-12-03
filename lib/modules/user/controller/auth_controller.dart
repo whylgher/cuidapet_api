@@ -99,7 +99,7 @@ class AuthController {
     final user = int.parse(request.headers['user']!);
     final supplier = int.tryParse(request.headers['supplier'] ?? '');
     final token =
-        JwtHelper.generateJWT(user, supplier).replaceAll('Bearer', '');
+        JwtHelper.generateJWT(user, supplier).replaceAll('Bearer ', '');
 
     final inputModel = UserConfirmInputModel(
       userId: user,
@@ -112,7 +112,7 @@ class AuthController {
     return Response.ok(
       jsonEncode(
         {
-          'access_token': 'Bearer$token',
+          'access_token': 'Bearer $token',
           'refresh_token': refreshToken,
         },
       ),
@@ -149,7 +149,9 @@ class AuthController {
       log.error(e);
       return Response.internalServerError(
         body: jsonEncode(
-          {'message': 'Erro ao atualizar access token'},
+          {
+            'message': 'Erro ao atualizar access token',
+          },
         ),
       );
     }
