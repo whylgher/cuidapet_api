@@ -6,4 +6,5 @@ abstract class ISupplierService {
   Future<List<SupplierNearByMeDto>> findNearMeBy(double lat, double lng);
   Future<Supplier?> findById(int id);
   Future<List<SupplierService>> findServicesSupplier(int supplierId);
+  Future<bool> checkUserEmailExists(String email);
 }
