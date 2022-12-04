@@ -8,6 +8,6 @@ class SupplierRouter implements IRouter {
   @override
   void configure(Router router) {
     final supplierController = GetIt.I.get<SupplierController>();
-    router.mount('/suppliers/', SupplierController().router);
+    router.mount('/suppliers/', supplierController.router);
   }
 }
