@@ -1,1 +1,5 @@
-abstract class ICategoriesService {}
+import '../../../entities/category.dart';
+
+abstract class ICategoriesService {
+  Future<List<Category>> findall();
+}
