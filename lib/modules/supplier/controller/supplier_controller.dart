@@ -9,6 +9,7 @@ import 'package:shelf_router/shelf_router.dart';
 import '../../../application/logger/i_logger.dart';
 import '../../../entities/supplier.dart';
 import '../service/i_supplier_service.dart';
+import '../view_models/create_supplier_user_view_model.dart';
 
 part 'supplier_controller.g.dart';
 
@@ -121,6 +122,25 @@ class SupplierController {
     final isEmailExists = await service.checkUserEmailExists(email);
 
     return isEmailExists ? Response(200) : Response(204);
+  }
+
+  @Route.post('/user')
+  Future<Response> createUser(Request request) async {
+    try {
+      final model = CreateSupplierUserViewModel(await request.readAsString());
+      service.createUserSupplier(model);
+
+      return Response.ok(jsonEncode({}));
+    } catch (e, s) {
+      log.error('Erro ao cadastrar um novo fornecedor e usuário', e, s);
+      return Response.internalServerError(
+        body: jsonEncode(
+          {
+            'message': 'Erro ao cadastrar um novo fornecedor e usuário',
+          },
+        ),
+      );
+    }
   }
 
   String _supplierMapper(Supplier supplier) {

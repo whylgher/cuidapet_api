@@ -75,7 +75,7 @@ class AuthController {
   @Route.post('/register')
   Future<Response> saveUser(Request request) async {
     try {
-      final userModel = UserSaveInputModel(
+      final userModel = UserSaveInputModel.requestMapping(
         await request.readAsString(),
       );
       await userService.createUser(userModel);

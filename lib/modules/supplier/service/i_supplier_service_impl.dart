@@ -2,17 +2,23 @@
 import 'package:cuidapet_api/dtos/supplier_near_by_me_dto.dart';
 import 'package:cuidapet_api/entities/supplier.dart';
 import 'package:cuidapet_api/entities/supplier_service.dart';
+import 'package:cuidapet_api/modules/supplier/view_models/create_supplier_user_view_model.dart';
 import 'package:injectable/injectable.dart';
 
 import './i_supplier_service.dart';
+import '../../../entities/category.dart';
+import '../../user/service/i_user_service.dart';
+import '../../user/view_models/user_save_input_model.dart';
 import '../data/i_supplier_repository.dart';
 
 @LazySingleton(as: ISupplierService)
 class ISupplierServiceImpl implements ISupplierService {
   final ISupplierRepository repository;
+  final IUserService userService;
   static const DISTANCE = 5;
 
   ISupplierServiceImpl({
+    required this.userService,
     required this.repository,
   });
 
@@ -30,4 +36,20 @@ class ISupplierServiceImpl implements ISupplierService {
   @override
   Future<bool> checkUserEmailExists(String email) =>
       repository.checkUserEmailExists(email);
+
+  @override
+  Future<void> createUserSupplier(CreateSupplierUserViewModel model) async {
+    final supplierEntity = Supplier(
+        name: model.supplierName, category: Category(id: model.category));
+
+    final supplierId = await repository.saveSupplier(supplierEntity);
+
+    final userInputModel = UserSaveInputModel(
+      email: model.email,
+      password: model.password,
+      supplierId: supplierId,
+    );
+
+    await userService.createUser(userInputModel);
+  }
 }
