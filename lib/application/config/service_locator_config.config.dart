@@ -13,6 +13,8 @@ import 'package:cuidapet_api/application/database/i_database_connection_impl.dar
     as _i4;
 import 'package:cuidapet_api/application/logger/i_logger.dart' as _i8;
 import 'package:cuidapet_api/modules/user/controller/auth_controller.dart'
+    as _i12;
+import 'package:cuidapet_api/modules/user/controller/user_controller.dart'
     as _i11;
 import 'package:cuidapet_api/modules/user/data/i_user_repository.dart' as _i6;
 import 'package:cuidapet_api/modules/user/data/i_user_repository_impl.dart'
@@ -46,7 +48,11 @@ _i1.GetIt init(
         userRepository: gh<_i6.IUserRepository>(),
         log: gh<_i8.ILogger>(),
       ));
-  gh.factory<_i11.AuthController>(() => _i11.AuthController(
+  gh.factory<_i11.UserController>(() => _i11.UserController(
+        userService: gh<_i9.IUserService>(),
+        log: gh<_i8.ILogger>(),
+      ));
+  gh.factory<_i12.AuthController>(() => _i12.AuthController(
         userService: gh<_i9.IUserService>(),
         log: gh<_i8.ILogger>(),
       ));
