@@ -1,4 +1,3 @@
-import 'package:cuidapet_api/entities/user.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
 
@@ -6,9 +5,11 @@ import './i_user_repository.dart';
 import '../../../application/database/i_database_connection.dart';
 import '../../../application/helpers/cripty_helper.dart';
 import '../../../application/logger/i_logger.dart';
+import '../../../entities/user.dart';
 import '../../../exceptions/database_exception.dart';
 import '../../../exceptions/user_exists_exception.dart';
 import '../../../exceptions/user_not_found_exception.dart';
+import '../view_models/platform.dart';
 
 @LazySingleton(as: IUserRepository)
 class IUserRepositoryImpl implements IUserRepository {
@@ -269,6 +270,34 @@ class IUserRepositoryImpl implements IUserRepository {
       ]);
     } on MySqlException catch (e, s) {
       log.error('Erro ao atualizar avatar', e, s);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
+  @override
+  Future<void> updateDeviceToken(
+      int id, String token, Platform platForm) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+      var set = '';
+      if (platForm == Platform.ios) {
+        set = 'ios_token = ?';
+      } else {
+        set = 'android_token = ?';
+      }
+
+      final query = '''
+        UPDATE usuario
+        SET $set
+        WHERE id = ?
+      ''';
+      await conn.query(query, [token, id]);
+    } on MySqlException catch (e, s) {
+      log.error('Erro ao atualizar o device token', e, s);
       throw DatabaseException();
     } finally {
       await conn?.close();

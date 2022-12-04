@@ -2,14 +2,15 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cuidapet_api/exceptions/user_not_found_exception.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 
 import '../../../application/logger/i_logger.dart';
+import '../../../exceptions/user_not_found_exception.dart';
 import '../service/i_user_service.dart';
 import '../view_models/update_url_avatar_view_model.dart';
+import '../view_models/user_update_device_input_model.dart';
 
 part 'user_controller.g.dart';
 
@@ -78,6 +79,25 @@ class UserController {
       log.error('Erro ao atualizar avatar', e, s);
       return Response.internalServerError(
           body: {'message': 'Erro ao atualizar avatar'});
+    }
+  }
+
+  @Route.put('/device')
+  Future<Response> updateDeviceToken(Request request) async {
+    try {
+      final userId = int.parse(request.headers['user']!);
+
+      final updateDeviceToken = UserUpdateDeviceInputModel(
+        userId: userId,
+        dataRequest: await request.readAsString(),
+      );
+
+      await userService.updateDeviceToken(updateDeviceToken);
+
+      return Response.ok(jsonEncode({}));
+    } catch (e, s) {
+      log.error('Erro ao atualizar device token', e, s);
+      return Response.internalServerError();
     }
   }
 

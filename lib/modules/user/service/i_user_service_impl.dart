@@ -1,7 +1,4 @@
-import 'package:cuidapet_api/modules/user/view_models/refresh_token_view_model.dart';
-import 'package:cuidapet_api/modules/user/view_models/update_url_avatar_view_model.dart';
-import 'package:cuidapet_api/modules/user/view_models/user_confirm_input_model.dart';
-import 'package:cuidapet_api/modules/user/view_models/user_refresh_token_input_model.dart';
+import 'package:cuidapet_api/modules/user/view_models/user_update_device_input_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
 
@@ -12,6 +9,10 @@ import '../../../entities/user.dart';
 import '../../../exceptions/service_exception.dart';
 import '../../../exceptions/user_not_found_exception.dart';
 import '../data/i_user_repository.dart';
+import '../view_models/refresh_token_view_model.dart';
+import '../view_models/update_url_avatar_view_model.dart';
+import '../view_models/user_confirm_input_model.dart';
+import '../view_models/user_refresh_token_input_model.dart';
 import '../view_models/user_save_input_model.dart';
 
 @LazySingleton(as: IUserService)
@@ -130,4 +131,12 @@ class IUserServiceImpl implements IUserService {
     await userRepository.updateUrlAvatar(viewModel.userId, viewModel.urlAvatar);
     return findById(viewModel.userId);
   }
+
+  @override
+  Future<void> updateDeviceToken(UserUpdateDeviceInputModel model) =>
+      userRepository.updateDeviceToken(
+        model.userId,
+        model.token,
+        model.platform,
+      );
 }
