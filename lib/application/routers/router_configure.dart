@@ -1,6 +1,7 @@
 import 'package:shelf_router/shelf_router.dart';
 
 import '../../modules/categories/categories_router.dart';
+import '../../modules/schedules/schedule_router.dart';
 import '../../modules/supplier/supplier_router.dart';
 import '../../modules/user/user_router.dart';
 import 'i_router.dart';
@@ -11,6 +12,7 @@ class RouterConfigure {
     UserRouter(),
     CategoriesRouter(),
     SupplierRouter(),
+    ScheduleRouter(),
   ];
 
   RouterConfigure(this._router);
