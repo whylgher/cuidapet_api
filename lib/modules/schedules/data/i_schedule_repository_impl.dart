@@ -140,7 +140,7 @@ class IScheduleRepositoryImpl implements IScheduleRepository {
       conn = await connection.openConnection();
 
       final result = await conn.query('''
-          SELECT
+          SELECT 
             fs.id, fs.nome_servico, fs.valor_servico, fs.fornecedor_id
           FROM agendamento_servicos AS ags
           INNER JOIN fornecedor_servicos fs ON fs.id = ags.fornecedor_servicos_id
@@ -150,11 +150,13 @@ class IScheduleRepositoryImpl implements IScheduleRepository {
       return result
           .map(
             (s) => ScheduleService(
-                service: SupplierService(
-                    id: s['id'],
-                    name: s['nome_servico'],
-                    price: s['valor_servico'],
-                    supplierId: s['fornecedor_id'])),
+              service: SupplierService(
+                id: s['id'],
+                name: s['nome_servico'],
+                price: s['valor_servico'],
+                supplierId: s['fornecedor_id'],
+              ),
+            ),
           )
           .toList();
     } on MySqlException catch (e, s) {
