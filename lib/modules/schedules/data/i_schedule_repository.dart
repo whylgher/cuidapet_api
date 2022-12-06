@@ -6,4 +6,6 @@ abstract class IScheduleRepository {
   Future<void> changeStatus(String status, int scheduleId);
 
   Future<List<Schedule>> findAllSchedulesByUser(int userId);
+
+  Future<List<Schedule>> findAllSchedulesBySupplier(int userId);
 }

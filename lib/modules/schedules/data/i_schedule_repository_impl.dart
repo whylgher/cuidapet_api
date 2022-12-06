@@ -132,6 +132,53 @@ class IScheduleRepositoryImpl implements IScheduleRepository {
     }
   }
 
+  @override
+  Future<List<Schedule>> findAllSchedulesBySupplier(int userId) async {
+    MySqlConnection? conn;
+
+    try {
+      conn = await connection.openConnection();
+
+      final query = '''
+          SELECT  a.id, a.data_agendamento, a.status, a.nome, a.nome_pet,
+          f.id as fornec_id, f.nome as fornec_nome, f.logo
+          FROM agendamento AS a
+            INNER JOIN fornecedor f ON f.id = a.fornecedor_id
+            INNER JOIN usuario u ON u.fornecedor_id = f.id
+          WHERE u.id = ?
+          ORDER BY a.data_agendamento DESC
+        ''';
+
+      final result = await conn.query(query, [userId]);
+
+      final scheduleResultFuture = result
+          .map(
+            (s) async => Schedule(
+              id: s['id'],
+              scheduleDate: s['data_agendamento'],
+              status: s['status'],
+              name: s['nome'],
+              petName: s['nome_pet'],
+              userId: userId,
+              supplier: Supplier(
+                id: s['fornec_id'],
+                logo: (s['logo'] as Blob?).toString(),
+                name: s['fornec_nome'],
+              ),
+              services: await findAllServicesBySchedule(s['id']),
+            ),
+          )
+          .toList();
+
+      return Future.wait(scheduleResultFuture);
+    } on MySqlException catch (e, s) {
+      log.error('Erro ao buscar agendamentos do usuário', e, s);
+      throw DatabaseException();
+    } finally {
+      await conn?.close();
+    }
+  }
+
   Future<List<ScheduleService>> findAllServicesBySchedule(
       int scheduleId) async {
     MySqlConnection? conn;

@@ -23,5 +23,10 @@ Router _$ScheduleControllerRouter(ScheduleController service) {
     r'/',
     service.findAllScheduleByUser,
   );
+  router.add(
+    'GET',
+    r'/supplier',
+    service.findAllScheduleBySupplier,
+  );
   return router;
 }
