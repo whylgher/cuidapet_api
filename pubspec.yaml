@@ -17,6 +17,7 @@ dependencies:
   logger: ^1.1.0
   injectable: ^2.1.0
   jaguar_jwt: ^3.0.0
+  http: ^0.13.5
   
   #
   # Chamando a versão direto do github
@@ -27,7 +28,6 @@ dependencies:
   #     path: shelf_router_generator
 
 dev_dependencies:
-  http: ^0.13.0
   lints: ^2.0.0
   test: ^1.15.0
   build_runner: ^2.3.2
