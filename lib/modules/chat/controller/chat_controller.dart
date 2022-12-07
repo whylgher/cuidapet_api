@@ -8,6 +8,7 @@ import 'package:shelf_router/shelf_router.dart';
 
 import '../../../application/logger/i_logger.dart';
 import '../service/i_chat_service.dart';
+import '../view_models/chat_notify_view_model.dart';
 
 part 'chat_controller.g.dart';
 
@@ -38,6 +39,12 @@ class ChatController {
       log.error('Erro ao iniciar chat', e, s);
       return Response.internalServerError();
     }
+  }
+
+  @Route.post('/notify')
+  Future<Response> notifyUser(Request request) async {
+    final model = ChatNotifyViewModel(await request.readAsString());
+    return Response.ok(jsonEncode(''));
   }
 
   Router get router => _$ChatControllerRouter(this);

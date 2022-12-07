@@ -13,5 +13,10 @@ Router _$ChatControllerRouter(ChatController service) {
     r'/schedule/<scheduleId|[0-9]+>/start-chat',
     service.startChatByScheduleId,
   );
+  router.add(
+    'POST',
+    r'/notify',
+    service.notifyUser,
+  );
   return router;
 }
