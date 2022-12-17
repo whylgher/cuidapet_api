@@ -1,5 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:mysql1/mysql1.dart';
+import 'package:shelf/shelf.dart';
 
 import './i_user_repository.dart';
 import '../../../application/database/i_database_connection.dart';
@@ -55,6 +56,9 @@ class IUserRepositoryImpl implements IUserRepository {
         message: 'Erro ao criar usuario',
         exception: e,
       );
+    } catch (e, s) {
+      log.error('Erro interno', e, s);
+      throw Response.internalServerError();
     } finally {
       await conn?.close();
     }
