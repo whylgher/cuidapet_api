@@ -88,8 +88,8 @@ class AuthController {
       return Response(400,
           body: jsonEncode(
               {'message': 'Usuário já cadastrado na base de dados.'}));
-    } catch (e) {
-      log.error('Erro ao cadastrar usuário', e);
+    } catch (e, s) {
+      log.error('Erro ao cadastrar usuário', e, s);
       return Response.internalServerError();
     }
   }
