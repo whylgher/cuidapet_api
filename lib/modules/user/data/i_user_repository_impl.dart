@@ -25,9 +25,11 @@ class IUserRepositoryImpl implements IUserRepository {
   @override
   Future<User> createUser(User user) async {
     MySqlConnection? conn;
+    Future.delayed(Duration(seconds: 1));
 
     try {
       conn = await connection.openConnection();
+      Future.delayed(Duration(seconds: 1));
       final query = ''' 
       INSERT usuario(email, tipo_cadastro, img_avatar, senha,
         fornecedor_id, social_id)
