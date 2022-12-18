@@ -21,11 +21,11 @@ class ApplicationConfig {
 
   void _loadDataBaseConfig() {
     final databaseConfig = DatabaseConnectionConfiguration(
-      host: '139.162.201.203',
-      user: 'whylgher',
-      port: 3306,
-      password: 'Mwl3\$P78@',
-      databaseName: 'cuidapet_db',
+      host: env['DATABASE_HOST'] ?? env['databaseHost']!,
+      user: env['DATABASE_USER'] ?? env['databaseUser']!,
+      port: int.tryParse(env['DATABASE_PORT'] ?? env['databasePort']!) ?? 0,
+      password: env['DATABASE_PASSWORD'] ?? env['databasePassword']!,
+      databaseName: env['DATABASE_NAME'] ?? env['databaseName']!,
     );
     GetIt.I.registerSingleton(databaseConfig);
   }
