@@ -1,6 +1,7 @@
 import 'package:cuidapet_api/modules/user/view_models/user_update_device_input_model.dart';
 import 'package:injectable/injectable.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
+import 'package:shelf/shelf.dart';
 
 import './i_user_service.dart';
 import '../../../application/helpers/jwt_helper.dart';
@@ -27,13 +28,18 @@ class IUserServiceImpl implements IUserService {
 
   @override
   Future<User> createUser(UserSaveInputModel user) {
-    final userEntity = User(
-        email: user.email,
-        password: user.password,
-        registerType: 'App',
-        supplierId: user.supplierId);
+    try {
+      final userEntity = User(
+          email: user.email,
+          password: user.password,
+          registerType: 'App',
+          supplierId: user.supplierId);
 
-    return userRepository.createUser(userEntity);
+      return userRepository.createUser(userEntity);
+    } catch (e, s) {
+      log.error('Erro ao atualizar avatar', e, s);
+      throw Response.internalServerError();
+    }
   }
 
   @override
